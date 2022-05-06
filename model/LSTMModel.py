@@ -2,13 +2,8 @@
 from keras.models import Sequential
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-import seaborn as sns
-from statsmodels.tsa.holtwinters import ExponentialSmoothing, SimpleExpSmoothing, Holt
 from sklearn.metrics import mean_squared_error
-import math
-import json
 from sklearn.preprocessing import MinMaxScaler
 from keras.layers import Dense, LSTM
 from pandas.tseries.offsets import DateOffset
