@@ -1,17 +1,20 @@
 
+from operator import mod
 import tensorflow as tf
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
+import tempfile
+import os
+import json
+
 
 def run_model(dp):
     datapoint = pd.DataFrame(dp)
     df1 = load_json()
     sampled = format(df1,datapoint)
     forecast = test_model(sampled)
-    print(forecast)
     return forecast
 
 
@@ -30,9 +33,6 @@ def format(df1,dp):
     df = df[['timestamp', 'value']]
     # Downsample the dataset
     return df.set_index('timestamp').resample('30min').agg('first').fillna(0)
-
-
-#importing required libraries
 
 
 def test_model(sampled):
@@ -71,6 +71,8 @@ def test_model(sampled):
     #train the model
     model.fit(x_train, y_train, batch_size = 1, epochs=1)
 
+    #save model
+    save_model(model=model)
     #create the testing data set
     #create new array containing scale values from index
     test_data = scaled_data[train_length - 60:]
@@ -88,6 +90,11 @@ def test_model(sampled):
 
     #get models predicted price
     predictions = model.predict(x_test)
+    PATH = os.path.expanduser("~/Documents/models/predictdata/1.json")
+    json_string = json.dumps(x_test.tolist())
+    with open(PATH,'w+') as outfile:
+        outfile.write(json_string)
+
     predictions = scaler.inverse_transform(predictions)
 
     #plot data
@@ -110,10 +117,30 @@ def test_model(sampled):
 
 
 test_dp = [{
-   "timestamp": "2022-02-11 18:03:58.024",
+   "timestamp": "2022-05-11 18:03:58.024",
    "name": "EV Chargers",
    "attribute_name": "power",
    "value": 195.638
  }]
+
+def save_model(model):
+    MODEL_DIR = os.path.expanduser("~/Documents/models/")
+    version = 0.1
+    export_path = os.path.join(MODEL_DIR, str(version))
+    print('export_path = {}\n'.format(export_path))
+
+    tf.keras.models.save_model(
+        model,
+        export_path,
+        overwrite=True,
+        include_optimizer=True,
+        save_format=None,
+        signatures=None,
+        options=None
+    )
+
+    print('\nSaved model:')
+    os.system("ls -l {export_path}")
+
 
 run_model(test_dp)

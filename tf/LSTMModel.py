@@ -3,7 +3,6 @@ import tensorflow as tf
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
 
 def run_model(dp):
@@ -30,9 +29,6 @@ def format(df1,dp):
     df = df[['timestamp', 'value']]
     # Downsample the dataset
     return df.set_index('timestamp').resample('30min').agg('first').fillna(0)
-
-
-#importing required libraries
 
 
 def test_model(sampled):

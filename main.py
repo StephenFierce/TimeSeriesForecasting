@@ -3,9 +3,10 @@ import ssl
 import numpy as np
 import sched,time
 import json
-import model.LSTMModel as LSTMModel
 from datetime import datetime
+import sys
 import requests
+from model import LSTMModel
 
 #base url
 api_url = "http://localhost:8080/api/master/asset/"

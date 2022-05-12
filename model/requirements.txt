@@ -1,4 +1,4 @@
-keras
+tensorflow-aarch64
 pandas
 numpy
 sklearn
