@@ -6,6 +6,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from sklearn.preprocessing import MinMaxScaler
 import tempfile
+import joblib
 import os
 import json
 
@@ -39,6 +40,9 @@ def test_model(sampled):
     #scale data
     scaler = MinMaxScaler(feature_range=(0,1))
     scaled_data = scaler.fit_transform(sampled)
+
+    #save scaler
+    save_scaler(scaler=scaler)
 
     #create scaled training data
     train_length = int(round(scaled_data.shape[0]*0.8))
@@ -138,6 +142,18 @@ def save_model(model):
         signatures=None,
         options=None
     )
+
+    print('\nSaved model:')
+    os.system("ls -l {export_path}")
+
+def save_scaler(scaler):
+    MODEL_DIR = os.path.expanduser("~/Documents/models/")
+    version = 0.1
+    scaler_filename = "scaler.save"
+    export_path = os.path.join(MODEL_DIR, str(version), scaler_filename)
+    print('export_path = {}\n'.format(export_path))
+
+    joblib.dump(scaler, export_path)
 
     print('\nSaved model:')
     os.system("ls -l {export_path}")

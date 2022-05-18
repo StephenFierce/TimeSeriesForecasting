@@ -1,31 +1,28 @@
 import paho.mqtt.client as mqtt_client
-import ssl
 import numpy as np
 import sched,time
 import json
-from datetime import datetime
-import sys
+from datetime import datetime, timedelta
 import requests
-from model import LSTMModel
 
 #base url
-api_url = "http://localhost:8080/api/master/asset/"
+IP_ADDRESS = '192.168.1.24'
+api_url = 'http://192.168.1.24:8080/api/master/asset/'
 predicted = "predicted/"
 datapoint = "datapoint/"
 #asset ID
-assetID = "6Km3L3Rpv7OitJfOGyAlLn"
+assetID = "6BtaAwik8DZbedexptenPG"
 attr = "/attribute/"
 #attribute
 attribute = "power"
 
-broker = 'localhost'
 port = 1883
 subscribe = "master/client124/attribute/"
 sub_attribute = "power/"
 write = "master/client124/writeattributevalue/power/"
 client_id = 'client124'
 username = 'master:mqttuser'
-password = 'nIzd43x4oosl2jeRbxit6mjmoYXuPRFR'
+password = '0pFtSFY9cJlKnJX3LW8hBkg40cgxxhAN'
 
 #Log function
 def on_log(client, userdata, level, buf):
@@ -42,26 +39,41 @@ def on_connect(client, userdata, flags, rc):
 #This function receives messages from the broker and prints to console
 def on_message(client, userdata, msg):
     new_message = json.loads(msg.payload)
-    new_datapoint = [{
-        "timestamp":  datetime.fromtimestamp(new_message['timestamp']/1000.0),
-        "entity_id": new_message['attributeState']['ref']['id'],
-        "attribute_name": new_message['attributeState']['ref']['name'],
-        "value": new_message['attributeState']['value']
-     }]
-    forecast,history = LSTMModel.run_model(new_datapoint)
 
-    body = json.loads(forecast) 
-    history_body = json.loads(history)
+    # body = json.loads(forecast) 
+    # history_body = json.loads(history)
+    # response = requests.delete(api_url + predicted + assetID + attr + attribute)
+    # print(response.status_code)
+    # response = requests.post(api_url + predicted + assetID + attr + attribute,json=body)
+    # print(response.status_code)
+
+    # #delete + add historic data
+    # response = requests.delete(api_url + datapoint + assetID + attr + attribute)
+    # print(response.status_code)
+    # response = requests.post(api_url + datapoint + assetID + attr + attribute,json=history_body)
+    # print(response.status_code)
+
+    # Send request to Time Series API
+    PREDICT_API_URL = 'http://172.17.0.2:5096/predict_json'
+    predict_input = json.load(open('./2.json')) #replace with new datapoint(s)
+    response = requests.post(PREDICT_API_URL, json=predict_input)
+    new_datapoint = response.json()
+    print("Predicted value(s): " + str(new_datapoint))
+
+    # Mock new datapoint 30 min in the future
+    mock_timestamp = datetime.fromtimestamp(new_message['timestamp']/1000.0) + timedelta(minutes=30)
+    mock_datapoint = [{
+    "timestamp":  int(datetime.timestamp(mock_timestamp)*1000),
+    "value": new_datapoint[0][0]
+    }]
+
+
+    # Send prediction to Open Remote instance (and delete old prediction)
     response = requests.delete(api_url + predicted + assetID + attr + attribute)
-    print(response.status_code)
-    response = requests.post(api_url + predicted + assetID + attr + attribute,json=body)
-    print(response.status_code)
+    print(str(response.status_code) + " old prediction delete OK")
+    response = requests.post(api_url + predicted + assetID + attr + attribute,json=mock_datapoint)
+    print(str(response.status_code) + " new predicition post OK")
 
-    #delete + add historic data
-    response = requests.delete(api_url + datapoint + assetID + attr + attribute)
-    print(response.status_code)
-    response = requests.post(api_url + datapoint + assetID + attr + attribute,json=history_body)
-    print(response.status_code)
 
 def on_disconnect(client, userdata,rc=0):
     print("Disconnected result code "+str(rc))
@@ -83,7 +95,7 @@ client.on_disconnect = on_disconnect
 
 #Initialise connection
 print("Connecting...")
-client.connect(broker,port)
+client.connect(IP_ADDRESS,port)
 
 def disconnect():
     print("Disconnecting...")
@@ -96,16 +108,18 @@ def interval_publish(sc):
     client.publish(write + assetID,payload=np.random.randint(0,1000),qos=0,retain=False)
     sc.enter(10,1,interval_publish, (sc,))
 
-s.enter(10,1,interval_publish,(s,))
+#s.enter(10,1,interval_publish,(s,))
 
 
 #Start listening
 print("Listening...")
 try:
-    client.loop_start()
-    while client.is_connected:
-        client.publish(write + assetID,payload=np.random.randint(0,250),qos=0,retain=False)
-        time.sleep(60)
+    client.loop_forever()
+    # Publish dummy value every 60 seconds
+    #client.loop_start()
+    #while client.is_connected:
+        #client.publish(write + assetID,payload=np.random.randint(0,250),qos=0,retain=False)
+        #time.sleep(60)
 except KeyboardInterrupt:
     disconnect()
 
