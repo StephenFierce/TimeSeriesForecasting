@@ -28,13 +28,7 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
   <h3 align="center">Time Series Forecasting</h3>
-
   <p align="center">
     Using Open Remote time series data to predict the future!
     <br />
@@ -117,12 +111,22 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+This guide contains instructions on setting up the Time Series Forecasting project locally.
+To get a local copy up and running follow these steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+* python 3.9.12
+* Tensorflow
+* Docker
+* Java IDE
+* Open Remote Dev Environment
+
+Before starting to setup the Time Series Forecasting project it is required to setup an Open Remote Dev Environment
+
+* Open Remote Dev Environment
+Follow this guide to setup an Open Remote dev environment: [Open Remote Developer Guide](ttps://github.com/openremote/openremote/wiki/Developer-Guide%3A-Setting-up-an-IDE)
+
 * npm
   ```sh
   npm install npm@latest -g
