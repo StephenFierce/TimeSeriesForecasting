@@ -10,6 +10,7 @@ RUN pip install -r requirements.txt
 #File to be run in docker
 COPY main.py ./
 COPY 2.json ./
+COPY 3.json ./
 
 #Run file in our container terminal
 CMD [ "python3","-u", "./main.py" ]

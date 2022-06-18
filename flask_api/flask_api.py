@@ -1,3 +1,4 @@
+from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 from flask import Flask, request, jsonify
 from flasgger import Swagger
@@ -5,8 +6,15 @@ import joblib
 
 app=Flask(__name__)
 Swagger(app)
+
+#Model location
 PATH =  "/usr/app/models/0.1"
+LOCAL_PATH = "/Users/stephen/Documents/VSCode/TimeSeriesForecasting/flask_api/models/0.1"
+
+#Load ML model
 classifier = tf.keras.models.load_model(PATH)
+
+#Load saved scaler
 scaler = joblib.load(PATH + "/scaler.save")
 
 @app.route('/')
@@ -29,6 +37,7 @@ def predict_time_series():
     prediction = classifier.predict(timestamp_value_array)
     return "The predicted values are: " + str(prediction)
 
+#Predict using JSON
 @app.route('/predict_json',methods=["POST"])
 def predict_time_series_json():
     """Lets's predict with a json POST request!
@@ -44,10 +53,11 @@ def predict_time_series_json():
                 description: The predicted values in JSON
     """
     data = request.json
-    #reshaped = data.reshape(-1,1)
-    #scaled_data = scaler.fit_transform(reshaped)
-    prediction = classifier.predict(data)    
-    return jsonify(prediction.tolist())
+    scaler = MinMaxScaler()
+    normalized = scaler.fit_transform(data)
+    prediction = classifier.predict(normalized)
+    inversed = scaler.inverse_transform(prediction)
+    return jsonify(inversed.tolist())
 
 
 if __name__=='__main__':

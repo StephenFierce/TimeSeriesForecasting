@@ -4,25 +4,39 @@ import sched,time
 import json
 from datetime import datetime, timedelta
 import requests
+import collections
 
-#base url
+#Local IP
 IP_ADDRESS = '192.168.1.24'
-api_url = 'http://192.168.1.24:8080/api/master/asset/'
+#Localhost
+LOCAL = '127.0.0.1'
+#Time Series Api Docker IP 
+DOCKER = '172.17.0.2'
+
+#REST API URL
+api_url = 'http://%s:8080/api/master/asset/'%(IP_ADDRESS)
 predicted = "predicted/"
 datapoint = "datapoint/"
-#asset ID
-assetID = "6BtaAwik8DZbedexptenPG"
 attr = "/attribute/"
-#attribute
+
+#asset ID
+assetID = "3YSodqG2M89j8f6kPSV4Aw"
+
+#attribute name
 attribute = "power"
 
-port = 1883
-subscribe = "master/client124/attribute/"
-sub_attribute = "power/"
-write = "master/client124/writeattributevalue/power/"
+mqtt_port = 1883
+realm = 'master'
 client_id = 'client124'
+subscribe = "%s/%s/attribute/"%(realm,client_id)
+write = "%s/%s/writeattributevalue/"%(realm,client_id)
+
+#MQTT Username & Password
 username = 'master:mqttuser'
-password = '0pFtSFY9cJlKnJX3LW8hBkg40cgxxhAN'
+password = 'iVyMYa4gZ3hIgHInW31bE3ccrNgIUe0z'
+
+#Mock Cache
+mock_input =  collections.deque([[130.321],[123.456],[111.321],[101.333],[122.212]])
 
 #Log function
 def on_log(client, userdata, level, buf):
@@ -32,7 +46,7 @@ def on_log(client, userdata, level, buf):
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Connected to MQTT Broker!")
-        client.subscribe(subscribe + sub_attribute + assetID)
+        client.subscribe(subscribe + attribute + "/" + assetID)
     else:  
         print("Failed to connect, return code %d\n", rc)
 
@@ -40,40 +54,31 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     new_message = json.loads(msg.payload)
 
-    # body = json.loads(forecast) 
-    # history_body = json.loads(history)
-    # response = requests.delete(api_url + predicted + assetID + attr + attribute)
-    # print(response.status_code)
-    # response = requests.post(api_url + predicted + assetID + attr + attribute,json=body)
-    # print(response.status_code)
-
-    # #delete + add historic data
-    # response = requests.delete(api_url + datapoint + assetID + attr + attribute)
-    # print(response.status_code)
-    # response = requests.post(api_url + datapoint + assetID + attr + attribute,json=history_body)
-    # print(response.status_code)
-
     # Send request to Time Series API
-    PREDICT_API_URL = 'http://172.17.0.2:5096/predict_json'
-    predict_input = json.load(open('./2.json')) #replace with new datapoint(s)
-    response = requests.post(PREDICT_API_URL, json=predict_input)
-    new_datapoint = response.json()
-    print("Predicted value(s): " + str(new_datapoint))
+    PREDICT_API_URL = 'http://%s:5096/predict_json'%(DOCKER)
+    predict_input = json.load(open('./3.json')) #replace with new datapoint(s)
+    if 'value' in new_message['attributeState']:
+        mock_input.append([new_message['attributeState']['value']])
+        if (len(mock_input) >= 10):
+            mock_input.popleft()
+        response = requests.post(PREDICT_API_URL, json=list(mock_input))
+        new_datapoints = response.json()
+        print("Predicted value(s): " + str(new_datapoints))
 
-    # Mock new datapoint 30 min in the future
-    mock_timestamp = datetime.fromtimestamp(new_message['timestamp']/1000.0) + timedelta(minutes=30)
-    mock_datapoint = [{
-    "timestamp":  int(datetime.timestamp(mock_timestamp)*1000),
-    "value": new_datapoint[0][0]
-    }]
+        # Mock new datapoint 30 min in the future
+        mock_datapoints = []
+        for i,dp in enumerate(new_datapoints):
+            mock_timestamp = int(datetime.timestamp(datetime.fromtimestamp(new_message['timestamp']/1000.0) + timedelta(minutes=i*60))*1000)
+            mock_datapoints.append({
+            "timestamp":  mock_timestamp,
+            "value": dp[0]
+            })
 
-
-    # Send prediction to Open Remote instance (and delete old prediction)
-    response = requests.delete(api_url + predicted + assetID + attr + attribute)
-    print(str(response.status_code) + " old prediction delete OK")
-    response = requests.post(api_url + predicted + assetID + attr + attribute,json=mock_datapoint)
-    print(str(response.status_code) + " new predicition post OK")
-
+        # Send prediction to Open Remote instance (and delete old prediction)
+        response = requests.delete(api_url + predicted + assetID + attr + attribute)
+        print(str(response.status_code) + " old prediction delete OK")
+        response = requests.post(api_url + predicted + assetID + attr + attribute,json=mock_datapoints)
+        print(str(response.status_code) + " new predicition post OK")
 
 def on_disconnect(client, userdata,rc=0):
     print("Disconnected result code "+str(rc))
@@ -89,41 +94,18 @@ client.on_log = on_log
 client.on_message = on_message
 client.on_disconnect = on_disconnect
 
-#CA Certificate
-#client.tls_set('/Users/stephen/cacert.pem',None,None,cert_reqs=ssl.CERT_NONE,tls_version=ssl.PROTOCOL_TLSv1_2)
-#client.tls_insecure_set(True)
-
 #Initialise connection
 print("Connecting...")
-client.connect(IP_ADDRESS,port)
+client.connect(IP_ADDRESS,mqtt_port)
 
 def disconnect():
     print("Disconnecting...")
     client.disconnect()
     client.loop_stop()
 
-s = sched.scheduler(time.time,time.sleep)
-
-def interval_publish(sc):
-    client.publish(write + assetID,payload=np.random.randint(0,1000),qos=0,retain=False)
-    sc.enter(10,1,interval_publish, (sc,))
-
-#s.enter(10,1,interval_publish,(s,))
-
-
 #Start listening
 print("Listening...")
 try:
     client.loop_forever()
-    # Publish dummy value every 60 seconds
-    #client.loop_start()
-    #while client.is_connected:
-        #client.publish(write + assetID,payload=np.random.randint(0,250),qos=0,retain=False)
-        #time.sleep(60)
 except KeyboardInterrupt:
     disconnect()
-
-
-
-
-
