@@ -50,6 +50,8 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#communicator">Communicator</a></li>
+        <li><a href="#generic-forecasting">Generic Forecasting</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -70,22 +72,19 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+Introduction on project
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+![C4 Component Diagram](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/C4%20Component%20Diagram.png)
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
+### Communicator
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
 
-Use the `BLANK_README.md` to get started.
+### Generic Forecasting
+
+
+Use the <a href="#getting-started">Getting Started</a> to get started.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 ### Built With
 
@@ -114,14 +113,16 @@ To get a local copy up and running follow these steps.
 
 * python 3.9.12
 * Tensorflow
-* Docker
-* Java IDE
+* Docker Desktop
+* Java IDE (IntelliJ)
 * Open Remote Dev Environment
 
 Before starting to setup the Time Series Forecasting project it is required to setup an Open Remote Dev Environment
 
 #### Open Remote Dev Environment
 Setup an OR dev enviornment using the dev-testing.yml profile: [Open Remote Developer Guide](https://github.com/openremote/openremote/wiki/Developer-Guide%3A-Setting-up-an-IDE)
+
+
 
 * npm
   ```sh
