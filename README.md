@@ -122,9 +122,9 @@ Before starting to setup the Time Series Forecasting project it is required to s
 #### Open Remote Dev Environment
 Setup an OR dev enviornment using the dev-testing.yml profile: [Open Remote Developer Guide](https://github.com/openremote/openremote/wiki/Developer-Guide%3A-Setting-up-an-IDE)
 
-Next, create an asset and attribute using [Creating an asset and attribute](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-an-asset-and-attribute).
+Next, create an asset and attribute using [Create an asset and attribute](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-an-asset-and-attribute).
 
-Lastly, create an MQTT user using LINK TO WIKI
+Lastly, create an MQTT user using [Create a MQTT user](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-a-MQTT-user).
 
 ### Installation
 
