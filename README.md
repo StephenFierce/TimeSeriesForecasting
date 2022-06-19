@@ -122,30 +122,30 @@ Before starting to setup the Time Series Forecasting project it is required to s
 #### Open Remote Dev Environment
 Setup an OR dev enviornment using the dev-testing.yml profile: [Open Remote Developer Guide](https://github.com/openremote/openremote/wiki/Developer-Guide%3A-Setting-up-an-IDE)
 
+Next, create an asset and attribute using LINK TO WIKI
 
-
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+Lastly, create an MQTT user using LINK TO WIKI
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/StephenFierce/TimeSeriesForecasting.git
    ```
-3. Install NPM packages
+2. Configure the Communicator
    ```sh
    npm install
    ```
-4. Enter your API in `config.js`
+3. Build Docker Images
    ```js
    const API_KEY = 'ENTER YOUR API';
    ```
+4. Run Docker Images
+
+
+6. Test using `power` attribute value
+
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
