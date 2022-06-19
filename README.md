@@ -50,6 +50,8 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#communicator">Communicator</a></li>
+        <li><a href="#generic-forecasting">Generic Forecasting</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -70,22 +72,19 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+Introduction on project
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+![C4 Component Diagram](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/C4%20Component%20Diagram.png)
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
+### Communicator
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
 
-Use the `BLANK_README.md` to get started.
+### Generic Forecasting
+
+
+Use the <a href="#getting-started">Getting Started</a> to get started.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 ### Built With
 
@@ -114,8 +113,8 @@ To get a local copy up and running follow these steps.
 
 * python 3.9.12
 * Tensorflow
-* Docker
-* Java IDE
+* Docker Desktop
+* Java IDE (IntelliJ)
 * Open Remote Dev Environment
 
 Before starting to setup the Time Series Forecasting project it is required to setup an Open Remote Dev Environment
@@ -123,28 +122,30 @@ Before starting to setup the Time Series Forecasting project it is required to s
 #### Open Remote Dev Environment
 Setup an OR dev enviornment using the dev-testing.yml profile: [Open Remote Developer Guide](https://github.com/openremote/openremote/wiki/Developer-Guide%3A-Setting-up-an-IDE)
 
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+Next, create an asset and attribute using LINK TO WIKI
+
+Lastly, create an MQTT user using LINK TO WIKI
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/StephenFierce/TimeSeriesForecasting.git
    ```
-3. Install NPM packages
+2. Configure the Communicator
    ```sh
    npm install
    ```
-4. Enter your API in `config.js`
+3. Build Docker Images
    ```js
    const API_KEY = 'ENTER YOUR API';
    ```
+4. Run Docker Images
+
+
+6. Test using `power` attribute value
+
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
