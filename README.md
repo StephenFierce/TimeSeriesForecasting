@@ -174,7 +174,7 @@ _This is the installation and configuration guide for the Time Series Forecastin
 Result:
 ![MQTT Connected Screen Shot](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/MQTT_Connected.png)
 
-10. Test using `power` attribute value
+10. Test the installation by changing the `power` attribute value on the asset page of the Open Remote manager.
 
 Result:
 ![Prediction Log Screen Shot](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/Prediction_Log.png)
