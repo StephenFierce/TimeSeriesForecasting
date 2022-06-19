@@ -109,6 +109,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 This guide contains instructions on setting up the Time Series Forecasting project locally.
 To get a local copy up and running follow these steps.
 
+
 ### Prerequisites
 
 * python 3.9.12
@@ -117,34 +118,66 @@ To get a local copy up and running follow these steps.
 * Java IDE (IntelliJ)
 * Open Remote Dev Environment
 
-Before starting to setup the Time Series Forecasting project it is required to setup an Open Remote Dev Environment
+_Before starting to setup the Time Series Forecasting project it is required to setup an Open Remote Dev Environment._
+
 
 #### Open Remote Dev Environment
-Setup an OR dev enviornment using the dev-testing.yml profile: [Open Remote Developer Guide](https://github.com/openremote/openremote/wiki/Developer-Guide%3A-Setting-up-an-IDE)
+1. Setup an OR dev enviornment using the dev-testing.yml profile: [Open Remote Developer Guide](https://github.com/openremote/openremote/wiki/Developer-Guide%3A-Setting-up-an-IDE)
 
-Next, create an asset and attribute using [Creating an asset and attribute](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-an-asset-and-attribute).
+2. Create an asset and attribute using [Create an asset and attribute](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-an-asset-and-attribute).
 
-Lastly, create an MQTT user using LINK TO WIKI
+3. Create an MQTT user using [Create a MQTT user](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-a-MQTT-user).
+
+_This concludes the Open Remote Dev Environment setup. Up next is the installation and configuration of the Time Series Forecasting project._
+
+
 
 ### Installation
+
+_This is the installation and configuration guide for the Time Series Forecasting project._
 
 1. Clone the repo
    ```sh
    git clone https://github.com/StephenFierce/TimeSeriesForecasting.git
    ```
-2. Configure the Communicator
+#### Configure the Communicator
+2. Open `main.py` 
+3. Paste the `Asset ID` from the [Create an asset and attribute](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-an-asset-and-attribute) guide into the `assetID` variable.
+4. Paste the `MQTT user secret` from the [Create a MQTT user](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-a-MQTT-user) guide into the `password` variable.
+5. Change `IP_ADDRESS` your current local IP
+
+#### Build Docker Images
+6. Build the Communicator image
+> Make sure the terminal location is in the `TimeSeriesForecasting` directory.
    ```sh
-   npm install
+   docker build -t communicator .
    ```
-3. Build Docker Images
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+7. Build the Generic Forecasting image
+> Make sure the terminal location is in the `TimeSeriesForecasting/flask_api` directory.
+   ```sh
+   docker build -t time_series_api .
    ```
-4. Run Docker Images
+   
+#### Run Docker Images
+8. Run the Communicator image
+   ```sh
+   docker run --rm --net=host communicator
+   ```
 
+9. Run the Generic Forecasting image
+   ```sh
+   docker run --rm -p 5096:5096 time_series_api
+   ```
+   
+> --rm removes the image after exiting, this prevents the build up of images during development.
 
-6. Test using `power` attribute value
+Result:
+![MQTT Connected Screen Shot](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/MQTT_Connected.png)
 
+10. Test using `power` attribute value
+
+Result:
+![Prediction Log Screen Shot](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/Prediction_Log.png)
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
