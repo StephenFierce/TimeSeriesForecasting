@@ -20,7 +20,7 @@ datapoint = "datapoint/"
 attr = "/attribute/"
 
 #asset ID
-assetID = "3YSodqG2M89j8f6kPSV4Aw"
+assetID = "3xuDsmzeNPGi9X9d1mM8Zu"
 
 #attribute name
 attribute = "power"
@@ -33,7 +33,7 @@ write = "%s/%s/writeattributevalue/"%(realm,client_id)
 
 #MQTT Username & Password
 username = 'master:mqttuser'
-password = 'iVyMYa4gZ3hIgHInW31bE3ccrNgIUe0z'
+password = 'JTnYzG5RIVlAsgIPZA2kMX1wJC1idU6u'
 
 #Mock Cache
 mock_input =  collections.deque([[130.321],[123.456],[111.321],[101.333],[122.212]])
