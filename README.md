@@ -131,7 +131,7 @@ _This is the installation and configuration guide for the Time Series Forecastin
 2. Open `main.py` 
 3. Paste the `Asset ID` from the [Create an asset and attribute](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-an-asset-and-attribute) guide into the `assetID` variable.
 4. Paste the `MQTT user secret` from the [Create a MQTT user](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-a-MQTT-user) guide into the `password` variable.
-5. Change `IP_ADDRESS` your current local IP
+5. Change the `IP_ADDRESS` variable to your current local IP.
 
 #### Build Docker Images
 6. Build the Communicator image
