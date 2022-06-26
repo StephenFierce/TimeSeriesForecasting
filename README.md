@@ -52,7 +52,6 @@
       <ul>
         <li><a href="#communicator">Communicator</a></li>
         <li><a href="#generic-forecasting">Generic Forecasting</a></li>
-        <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
     <li>
@@ -72,32 +71,20 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Introduction on project
+This project contains the results of a Fontys ICT Open Learning project in coorporation with Open Remote. The project’s main goal was to create a generic time series forecasting feature that works on any time series dataset within the OpenRemote platform. In the end, the team managed to create a proof of concept for such a feature. The image below depicts the C4 component diagram for the project.
+
 
 ![C4 Component Diagram](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/C4%20Component%20Diagram.png)
 
 ### Communicator
+The communicator component is created as a hub between an OR instance and the generic forecasting component. It handles all communication using the MQTT and HTTP protocols. Using the existing MQTT infrastructure of OR the communicator subscribes on a predetermined attribute. Once the communicator receives a new datapoint from the subscribed attribute, a prediction is requested via the REST API of the generic forecasting component. 
 
+Upon receiving a prediction, the communicator uses custom REST API endpoints that allow for bulk adding and removal of data in an OR instance to insert the prediction data into the OR instance’s database. Before inserting the communicator purges previous predicted datapoints to prevent conflicts.
 
 ### Generic Forecasting
+Firstly, the generic forecasting component receives datapoints from the communicator. Next, a pre-trained saved model is loaded from local storage. Then, the component uses the datapoints and loaded model to make a prediction. Lastly, the component returns the prediction to the communicator in the response of the initial HTTP request made by the communicator.
 
-
-Use the <a href="#getting-started">Getting Started</a> to get started.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-### Built With
-
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+Use the <a href="#getting-started">Getting Started</a> guide to get started.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -144,7 +131,7 @@ _This is the installation and configuration guide for the Time Series Forecastin
 2. Open `main.py` 
 3. Paste the `Asset ID` from the [Create an asset and attribute](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-an-asset-and-attribute) guide into the `assetID` variable.
 4. Paste the `MQTT user secret` from the [Create a MQTT user](https://github.com/StephenFierce/TimeSeriesForecasting/wiki/Creating-a-MQTT-user) guide into the `password` variable.
-5. Change `IP_ADDRESS` your current local IP
+5. Change the `IP_ADDRESS` variable to your current local IP.
 
 #### Build Docker Images
 6. Build the Communicator image
@@ -174,22 +161,11 @@ _This is the installation and configuration guide for the Time Series Forecastin
 Result:
 ![MQTT Connected Screen Shot](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/MQTT_Connected.png)
 
-10. Test using `power` attribute value
+10. Test the installation by changing the `power` attribute value on the asset page of the Open Remote manager.
 
 Result:
 ![Prediction Log Screen Shot](https://github.com/StephenFierce/TimeSeriesForecasting/blob/master/blob/Prediction_Log.png)
 
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
