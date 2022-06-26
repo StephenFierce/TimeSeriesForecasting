@@ -1,5 +1,8 @@
 paho-mqtt
 numpy
 keras
+pandas
+python-dateutil
 datetime
 requests
+scikit-learn

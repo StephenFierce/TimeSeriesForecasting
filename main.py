@@ -1,13 +1,17 @@
 import paho.mqtt.client as mqtt_client
 import numpy as np
-import sched,time
+import pandas as pd
 import json
 from datetime import datetime, timedelta
-import requests
-import collections
+from sklearn.preprocessing import MinMaxScaler
+import dateutil.parser as duparser
+import requests, os, collections
+import joblib
+from os.path import dirname
+
 
 #Local IP
-IP_ADDRESS = '192.168.1.24'
+IP_ADDRESS = '145.93.100.78'
 #Localhost
 LOCAL = '127.0.0.1'
 #Time Series Api Docker IP 
@@ -20,7 +24,7 @@ datapoint = "datapoint/"
 attr = "/attribute/"
 
 #asset ID
-assetID = "3xuDsmzeNPGi9X9d1mM8Zu"
+assetID = "3as16N7vT0PEzOvjP50OMZ"
 
 #attribute name
 attribute = "power"
@@ -33,10 +37,9 @@ write = "%s/%s/writeattributevalue/"%(realm,client_id)
 
 #MQTT Username & Password
 username = 'master:mqttuser'
-password = 'JTnYzG5RIVlAsgIPZA2kMX1wJC1idU6u'
+password = 'buSyvqRvIViawfH4AbCyG98H8Te1mgvx'
 
 #Mock Cache
-mock_input =  collections.deque([[130.321],[123.456],[111.321],[101.333],[122.212]])
 
 #Log function
 def on_log(client, userdata, level, buf):
@@ -56,20 +59,46 @@ def on_message(client, userdata, msg):
 
     # Send request to Time Series API
     PREDICT_API_URL = 'http://%s:5096/predict_json'%(DOCKER)
-    predict_input = json.load(open('./3.json')) #replace with new datapoint(s)
+    print(dirname(__file__))
+    historic = pd.read_json(dirname(__file__) + '/laadpalen.json') #replace with new datapoint(s)
+    historic = historic.sort_values(by='timestamp')
+    #historic.sort(key=lambda x: duparser.parse(x['timestamp']))
+    sampled = historic.set_index('timestamp').resample('30min').agg('mean').fillna(0)
+    sampled['timestamp'] = sampled.index
     if 'value' in new_message['attributeState']:
+        # Mock Cache
+        mock_input =  collections.deque()
+        historic_end = sampled.tail(600)
+        for i,dp in enumerate(historic_end.values.tolist()):
+                mock_input.append([dp[0]])
+
+
+        # Predict
         mock_input.append([new_message['attributeState']['value']])
         if (len(mock_input) >= 10):
             mock_input.popleft()
         response = requests.post(PREDICT_API_URL, json=list(mock_input))
         new_datapoints = response.json()
-        print("Predicted value(s): " + str(new_datapoints))
+
+        #scale data
+        scaler = MinMaxScaler(feature_range=(historic['value'].min(),historic['value'].max()))
+        scaled_data = scaler.fit_transform(new_datapoints)
 
         # Mock new datapoint 30 min in the future
         mock_datapoints = []
-        for i,dp in enumerate(new_datapoints):
-            mock_timestamp = int(datetime.timestamp(datetime.fromtimestamp(new_message['timestamp']/1000.0) + timedelta(minutes=i*60))*1000)
+        for i,dp in enumerate(scaled_data):
+            mock_timestamp = int(datetime.timestamp(datetime.fromtimestamp(new_message['timestamp']/1000.0) + timedelta(minutes=i*30))*1000)
             mock_datapoints.append({
+            "timestamp":  mock_timestamp,
+            "value": dp[0]
+            })
+
+        # Mock historic datapoints each 60 minutes into the past
+        mock_historic = []
+        date_diff = int(datetime.timestamp(datetime.now()) - datetime.timestamp(sampled.iloc[-1]['timestamp']))
+        for i,dp in enumerate(sampled.values.tolist()):
+            mock_timestamp = int(datetime.timestamp(pd.Timestamp(dp[1])) + date_diff)*1000
+            mock_historic.append({
             "timestamp":  mock_timestamp,
             "value": dp[0]
             })
@@ -79,6 +108,14 @@ def on_message(client, userdata, msg):
         print(str(response.status_code) + " old prediction delete OK")
         response = requests.post(api_url + predicted + assetID + attr + attribute,json=mock_datapoints)
         print(str(response.status_code) + " new predicition post OK")
+        
+
+        # Inserting Demo Data
+        response = requests.delete(api_url + datapoint + assetID + attr + attribute)
+        print(str(response.status_code) + " old demo data delete OK")
+        response = requests.post(api_url + datapoint + assetID + attr + attribute,json=mock_historic)
+        print(str(response.status_code) + " new demo data post OK")
+
 
 def on_disconnect(client, userdata,rc=0):
     print("Disconnected result code "+str(rc))
