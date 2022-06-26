@@ -11,6 +11,7 @@ RUN pip install -r requirements.txt
 COPY main.py ./
 COPY 2.json ./
 COPY 3.json ./
+COPY laadpalen.json ./
 
 #Run file in our container terminal
 CMD [ "python3","-u", "./main.py" ]
